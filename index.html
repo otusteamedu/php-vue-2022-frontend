@@ -367,14 +367,14 @@
             serial: {
               required: required,
               isValidValue: function (value) {
-                const regex = new RegExp('\\d{4}');
+                const regex = new RegExp('\\d{4}')
                 return regex.test(value)
               }
             },
             number: {
               required: required,
               isValidValue: function (value) {
-                const regex = new RegExp('\\d{6}');
+                const regex = new RegExp('\\d{6}')
                 return regex.test(value)
               }
             },
@@ -403,6 +403,21 @@
         },
 
         displayForm: function () {
+          this.$v.$reset()
+          this.currentLead = Object.assign({}, {
+            id: null,
+            fullName: {
+              surname: '',
+              name: '',
+            },
+            birthday: '',
+            phone: '',
+            passport: {
+              serial: '',
+              number: '',
+              date: '',
+            },
+          })
           this.displayMode = 'form'
         },
 
@@ -432,7 +447,7 @@
               }
             })
             if (!response.ok) {
-              throw new Error('Ответ сервера: ' + response.status);
+              throw new Error('Ответ сервера: ' + response.status)
             }
             const json = await response.json()
             this.currentUser.token = json.token
@@ -464,7 +479,7 @@
               if (response.status === 401) {
                 this.logout()
               }
-              throw new Error('Ответ сервера: ' + response.status);
+              throw new Error('Ответ сервера: ' + response.status)
             }
             const json = await response.json()
             this.leads.splice(0)
@@ -494,7 +509,7 @@
               if (response.status === 401) {
                 this.logout()
               }
-              throw new Error('Ответ сервера: ' + response.status);
+              throw new Error('Ответ сервера: ' + response.status)
             }
             const json = await response.json()
             const lead = this.mapBackendToFrontend(json)
@@ -534,7 +549,7 @@
               if (response.status === 401) {
                 this.logout()
               }
-              throw new Error('Ответ сервера: ' + response.status);
+              throw new Error('Ответ сервера: ' + response.status)
             }
             const json = await response.json()
             await this.displayList()
