@@ -356,6 +356,9 @@
                 'Content-Type': 'application/json'
               }
             })
+            if (!response.ok) {
+              throw new Error('Ответ сервера: ' + response.status);
+            }
             const json = await response.json()
             this.leads.splice(0)
             json.leads.forEach(el => {
@@ -378,6 +381,9 @@
                 'Content-Type': 'application/json'
               }
             })
+            if (!response.ok) {
+              throw new Error('Ответ сервера: ' + response.status);
+            }
             const json = await response.json()
             const lead = this.mapBackendToFrontend(json)
             this.currentLead = Object.assign({}, lead)
@@ -410,6 +416,9 @@
                 'Content-Type': 'application/json'
               }
             })
+            if (!response.ok) {
+              throw new Error('Ответ сервера: ' + response.status);
+            }
             const json = await response.json()
             await this.displayList()
             this.releaseInterface()
