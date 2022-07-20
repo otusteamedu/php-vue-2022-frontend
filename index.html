@@ -23,209 +23,257 @@
 
 <div id="app">
 
-  <article class="my-4" v-if="displayMode === 'list'">
-    <div class="container">
-      <div class="row">
-        <div class="col">
-          <div class="d-flex justify-content-between my-4">
-            <h3 class="m-0">Список заявок</h3>
-            <button class="btn btn-primary" @click="displayForm()">Создать заявку</button>
-          </div>
-          <template v-if="leads.length">
-            <table class="table table-striped">
-              <thead>
-              <tr>
-                <th scope="col">#</th>
-                <th scope="col">ФИО</th>
-                <th scope="col">Телефон</th>
-                <th scope="col">Статус</th>
-              </tr>
-              </thead>
+  <template v-if="!currentUser.token">
+
+    <article class="my-4">
+      <div class="container">
+        <div class="row">
+          <div class="col">
+            <div class="d-flex justify-content-between my-4">
+              <h3 class="m-0">Войти в систему</h3>
+            </div>
+            <form @submit.prevent>
+              <fieldset class="border p-4 my-4 bg-light">
+                <div class="form-row">
+                  <div class="form-group col-4">
+                    <label for="username">Логин</label>
+                    <input
+                      maxlength="100"
+                      type="text"
+                      id="username"
+                      class="form-control"
+                      :class="{'is-invalid': $v.currentUser.username.$dirty && !$v.currentUser.username.required}"
+                      :disabled="!isInterfaceActive"
+                      v-model="$v.currentUser.username.$model"/>
+                  </div>
+                  <div class="form-group col-4">
+                    <label for="password">Пароль</label>
+                    <input
+                      maxlength="100"
+                      type="password"
+                      id="password"
+                      class="form-control"
+                      :class="{'is-invalid': $v.currentUser.password.$dirty && !$v.currentUser.password.required}"
+                      :disabled="!isInterfaceActive"
+                      v-model="$v.currentUser.password.$model"/>
+                  </div>
+                </div>
+              </fieldset>
+              <button class="btn btn-primary" @click="login()">Войти</button>
+            </form>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container -->
+    </article>
+
+  </template>
+  <template v-else>
+
+    <article class="my-4" v-if="displayMode === 'list'">
+      <div class="container">
+        <div class="row">
+          <div class="col">
+            <div class="d-flex justify-content-between my-4">
+              <h3 class="m-0">Список заявок</h3>
+              <button class="btn btn-primary" @click="displayForm()">Создать заявку</button>
+            </div>
+            <template v-if="leads.length">
+              <table class="table table-striped">
+                <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">ФИО</th>
+                  <th scope="col">Телефон</th>
+                  <th scope="col">Статус</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr v-for="lead in leads" :key="lead.id">
+                  <td>{{ lead.id }}</td>
+                  <td><a href="javascript:void(0)"
+                         @click="displayLead(lead.id)">{{ lead.fullName.surname }} {{ lead.fullName.name }}</a></td>
+                  <td>{{ lead.phone }}</td>
+                  <td>В работе</td>
+                </tr>
+                </tbody>
+              </table>
+            </template>
+            <template v-else>
+              <p>У вас пока нет ни одной заявки.</p>
+            </template>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container -->
+    </article>
+
+    <article class="my-4" v-if="displayMode === 'lead'">
+      <div class="container">
+        <div class="row">
+          <div class="col">
+            <div class="d-flex justify-content-between my-4">
+              <h3 class="m-0">Заявка №{{ currentLead.id }}</h3>
+              <button class="btn btn-secondary" @click="displayList()">Вернуться к списку</button>
+            </div>
+            <table class="table">
               <tbody>
-              <tr v-for="lead in leads" :key="lead.id">
-                <td>{{ lead.id }}</td>
-                <td><a href="javascript:void(0)"
-                       @click="displayLead(lead.id)">{{ lead.fullName.surname }} {{ lead.fullName.name }}</a></td>
-                <td>{{ lead.phone }}</td>
-                <td>В работе</td>
+              <tr>
+                <th scope="row">Данные клиента</th>
+                <td class="pl-0">
+                  <table class="table table-borderless">
+                    <tbody>
+                    <tr>
+                      <th scope="row" class="pt-0 w-200">Фамилия</th>
+                      <td class="pt-0">{{ currentLead.fullName.surname }}</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Имя</th>
+                      <td>{{ currentLead.fullName.name }}</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Дата рождения</th>
+                      <td>{{ currentLead.birthday }}</td>
+                    </tr>
+                    <tr>
+                      <th scope="row" class="pb-0">Телефон</th>
+                      <td class="pb-0">{{ currentLead.phone }}</td>
+                    </tr>
+                    </tbody>
+                  </table>
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">Паспорт клиента</th>
+                <td class="pl-0">
+                  <table class="table table-borderless">
+                    <tbody>
+                    <tr>
+                      <th scope="row" class="pt-0 w-200">Серия</th>
+                      <td class="pt-0">{{ currentLead.passport.serial }}</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Номер</th>
+                      <td>{{ currentLead.passport.number }}</td>
+                    </tr>
+                    <tr>
+                      <th scope="row" class="pb-0">Дата выдачи</th>
+                      <td class="pb-0">{{ currentLead.passport.date }}</td>
+                    </tr>
+                    </tbody>
+                  </table>
+                </td>
               </tr>
               </tbody>
             </table>
-          </template>
-          <template v-else>
-            <p>У вас пока нет ни одной заявки.</p>
-          </template>
-        </div><!-- /.col -->
-      </div><!-- /.row -->
-    </div><!-- /.container -->
-  </article>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container -->
+    </article>
 
-  <article class="my-4" v-if="displayMode === 'lead'">
-    <div class="container">
-      <div class="row">
-        <div class="col">
-          <div class="d-flex justify-content-between my-4">
-            <h3 class="m-0">Заявка №{{ currentLead.id }}</h3>
-            <button class="btn btn-secondary" @click="displayList()">Вернуться к списку</button>
-          </div>
-          <table class="table">
-            <tbody>
-            <tr>
-              <th scope="row">Данные клиента</th>
-              <td class="pl-0">
-                <table class="table table-borderless">
-                  <tbody>
-                  <tr>
-                    <th scope="row" class="pt-0 w-200">Фамилия</th>
-                    <td class="pt-0">{{ currentLead.fullName.surname }}</td>
-                  </tr>
-                  <tr>
-                    <th scope="row">Имя</th>
-                    <td>{{ currentLead.fullName.name }}</td>
-                  </tr>
-                  <tr>
-                    <th scope="row">Дата рождения</th>
-                    <td>{{ currentLead.birthday }}</td>
-                  </tr>
-                  <tr>
-                    <th scope="row" class="pb-0">Телефон</th>
-                    <td class="pb-0">{{ currentLead.phone }}</td>
-                  </tr>
-                  </tbody>
-                </table>
-              </td>
-            </tr>
-            <tr>
-              <th scope="row">Паспорт клиента</th>
-              <td class="pl-0">
-                <table class="table table-borderless">
-                  <tbody>
-                  <tr>
-                    <th scope="row" class="pt-0 w-200">Серия</th>
-                    <td class="pt-0">{{ currentLead.passport.serial }}</td>
-                  </tr>
-                  <tr>
-                    <th scope="row">Номер</th>
-                    <td>{{ currentLead.passport.number }}</td>
-                  </tr>
-                  <tr>
-                    <th scope="row" class="pb-0">Дата выдачи</th>
-                    <td class="pb-0">{{ currentLead.passport.date }}</td>
-                  </tr>
-                  </tbody>
-                </table>
-              </td>
-            </tr>
-            </tbody>
-          </table>
-        </div><!-- /.col -->
-      </div><!-- /.row -->
-    </div><!-- /.container -->
-  </article>
+    <article class="my-4" v-if="displayMode === 'form'">
+      <div class="container">
+        <div class="row">
+          <div class="col">
+            <div class="d-flex justify-content-between my-4">
+              <h3 class="m-0">Создать заявку</h3>
+              <button class="btn btn-secondary" @click="displayList()">Вернуться к списку</button>
+            </div>
+            <form @submit.prevent>
+              <fieldset class="border p-4 my-4 bg-light">
+                <h4>Данные клиента</h4>
+                <div class="form-row">
+                  <div class="form-group col-4">
+                    <label for="surname">Фамилия</label>
+                    <input
+                      maxlength="100"
+                      type="text"
+                      id="surname"
+                      class="form-control"
+                      :class="{'is-invalid': $v.currentLead.fullName.surname.$dirty && !$v.currentLead.fullName.surname.required}"
+                      :disabled="!isInterfaceActive"
+                      v-model="$v.currentLead.fullName.surname.$model"/>
+                  </div>
+                  <div class="form-group col-4">
+                    <label for="name">Имя</label>
+                    <input
+                      maxlength="100"
+                      type="text"
+                      id="name"
+                      class="form-control"
+                      :class="{'is-invalid': $v.currentLead.fullName.name.$dirty && !$v.currentLead.fullName.name.required}"
+                      :disabled="!isInterfaceActive"
+                      v-model="$v.currentLead.fullName.name.$model"/>
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group col-4">
+                    <label for="birthday">Дата рождения</label>
+                    <input
+                      type="date"
+                      id="birthday"
+                      class="form-control"
+                      :class="{'is-invalid': $v.currentLead.birthday.$dirty && !$v.currentLead.birthday.required}"
+                      :disabled="!isInterfaceActive"
+                      v-model="$v.currentLead.birthday.$model"/>
+                  </div>
+                  <div class="form-group col-4">
+                    <label for="phone">Телефон</label>
+                    <input
+                      maxlength="100"
+                      type="tel"
+                      id="phone"
+                      class="form-control"
+                      :class="{'is-invalid': $v.currentLead.phone.$dirty && (!$v.currentLead.phone.required || !$v.currentLead.phone.isValidValue)}"
+                      :disabled="!isInterfaceActive"
+                      v-mask="'+7 (###) ###-##-##'"
+                      v-model="$v.currentLead.phone.$model"/>
+                  </div>
+                </div>
+              </fieldset>
+              <fieldset class="border p-4 my-4 bg-light">
+                <h4>Паспорт клиента</h4>
+                <div class="form-row">
+                  <div class="form-group col-4">
+                    <label for="serial">Серия</label>
+                    <input
+                      maxlength="4"
+                      type="text"
+                      id="serial"
+                      class="form-control"
+                      :class="{'is-invalid': $v.currentLead.passport.serial.$dirty && (!$v.currentLead.passport.serial.required || !$v.currentLead.passport.serial.isValidValue)}"
+                      :disabled="!isInterfaceActive"
+                      v-model="$v.currentLead.passport.serial.$model"/>
+                  </div>
+                  <div class="form-group col-4">
+                    <label for="number">Номер</label>
+                    <input
+                      maxlength="6"
+                      type="text"
+                      id="number"
+                      class="form-control"
+                      :class="{'is-invalid': $v.currentLead.passport.number.$dirty && (!$v.currentLead.passport.number.required || !$v.currentLead.passport.number.isValidValue)}"
+                      :disabled="!isInterfaceActive"
+                      v-model="$v.currentLead.passport.number.$model"/>
+                  </div>
+                  <div class="form-group col-4">
+                    <label for="date">Дата выдачи</label>
+                    <input
+                      type="date"
+                      id="date"
+                      class="form-control"
+                      :class="{'is-invalid': $v.currentLead.passport.date.$dirty && !$v.currentLead.passport.date.required}"
+                      :disabled="!isInterfaceActive"
+                      v-model="$v.currentLead.passport.date.$model"/>
+                  </div>
+                </div>
+              </fieldset>
+              <button class="btn btn-primary" @click="saveLead()">Отправить</button>
+            </form>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container -->
+    </article>
 
-  <article class="my-4" v-if="displayMode === 'form'">
-    <div class="container">
-      <div class="row">
-        <div class="col">
-          <div class="d-flex justify-content-between my-4">
-            <h3 class="m-0">Создать заявку</h3>
-            <button class="btn btn-secondary" @click="displayList()">Вернуться к списку</button>
-          </div>
-          <form @submit.prevent>
-            <fieldset class="border p-4 my-4 bg-light">
-              <h4>Данные клиента</h4>
-              <div class="form-row">
-                <div class="form-group col-4">
-                  <label for="surname">Фамилия</label>
-                  <input
-                    maxlength="100"
-                    type="text"
-                    id="surname"
-                    class="form-control"
-                    :class="{'is-invalid': $v.currentLead.fullName.surname.$dirty && !$v.currentLead.fullName.surname.required}"
-                    :disabled="!isInterfaceActive"
-                    v-model="$v.currentLead.fullName.surname.$model"/>
-                </div>
-                <div class="form-group col-4">
-                  <label for="name">Имя</label>
-                  <input
-                    maxlength="100"
-                    type="text"
-                    id="name"
-                    class="form-control"
-                    :class="{'is-invalid': $v.currentLead.fullName.name.$dirty && !$v.currentLead.fullName.name.required}"
-                    :disabled="!isInterfaceActive"
-                    v-model="$v.currentLead.fullName.name.$model"/>
-                </div>
-              </div>
-              <div class="form-row">
-                <div class="form-group col-4">
-                  <label for="birthday">Дата рождения</label>
-                  <input
-                    type="date"
-                    id="birthday"
-                    class="form-control"
-                    :class="{'is-invalid': $v.currentLead.birthday.$dirty && !$v.currentLead.birthday.required}"
-                    :disabled="!isInterfaceActive"
-                    v-model="$v.currentLead.birthday.$model"/>
-                </div>
-                <div class="form-group col-4">
-                  <label for="phone">Телефон</label>
-                  <input
-                    maxlength="100"
-                    type="tel"
-                    id="phone"
-                    class="form-control"
-                    :class="{'is-invalid': $v.currentLead.phone.$dirty && (!$v.currentLead.phone.required || !$v.currentLead.phone.isValidValue)}"
-                    :disabled="!isInterfaceActive"
-                    v-mask="'+7 (###) ###-##-##'"
-                    v-model="$v.currentLead.phone.$model"/>
-                </div>
-              </div>
-            </fieldset>
-            <fieldset class="border p-4 my-4 bg-light">
-              <h4>Паспорт клиента</h4>
-              <div class="form-row">
-                <div class="form-group col-4">
-                  <label for="serial">Серия</label>
-                  <input
-                    maxlength="4"
-                    type="text"
-                    id="serial"
-                    class="form-control"
-                    :class="{'is-invalid': $v.currentLead.passport.serial.$dirty && (!$v.currentLead.passport.serial.required || !$v.currentLead.passport.serial.isValidValue)}"
-                    :disabled="!isInterfaceActive"
-                    v-model="$v.currentLead.passport.serial.$model"/>
-                </div>
-                <div class="form-group col-4">
-                  <label for="number">Номер</label>
-                  <input
-                    maxlength="6"
-                    type="text"
-                    id="number"
-                    class="form-control"
-                    :class="{'is-invalid': $v.currentLead.passport.number.$dirty && (!$v.currentLead.passport.number.required || !$v.currentLead.passport.number.isValidValue)}"
-                    :disabled="!isInterfaceActive"
-                    v-model="$v.currentLead.passport.number.$model"/>
-                </div>
-                <div class="form-group col-4">
-                  <label for="date">Дата выдачи</label>
-                  <input
-                    type="date"
-                    id="date"
-                    class="form-control"
-                    :class="{'is-invalid': $v.currentLead.passport.date.$dirty && !$v.currentLead.passport.date.required}"
-                    :disabled="!isInterfaceActive"
-                    v-model="$v.currentLead.passport.date.$model"/>
-                </div>
-              </div>
-            </fieldset>
-            <button class="btn btn-primary" @click="saveLead()">Отправить</button>
-          </form>
-        </div><!-- /.col -->
-      </div><!-- /.row -->
-    </div><!-- /.container -->
-  </article>
+  </template>
 
 </div><!-- /#app -->
 
@@ -253,7 +301,6 @@
     // Vuelidate
     Vue.use(vuelidate.default)
     var required = validators.required
-    var minLength = validators.minLength
 
     // Vue The Mask
     Vue.use(VueTheMask)
@@ -262,6 +309,12 @@
     var vm = new Vue({
       el: '#app',
       data: {
+        // Объект пользователя
+        currentUser: {
+          username: '',
+          password: '',
+          token: ''
+        },
         // Объект заявки для формы/страницы
         currentLead: {
           id: null,
@@ -284,6 +337,14 @@
         isInterfaceActive: true,
       },
       validations: {
+        currentUser: {
+          username: {
+            required: required
+          },
+          password: {
+            required: required
+          },
+        },
         currentLead: {
           fullName: {
             surname: {
@@ -335,16 +396,58 @@
 
         displayList: async function () {
           await this.loadLeadList()
-          this.displayMode = 'list'
         },
 
         displayLead: async function (id) {
           await this.loadLead(id)
-          this.displayMode = 'lead'
         },
 
         displayForm: function () {
           this.displayMode = 'form'
+        },
+
+        login: async function () {
+
+          // Валидация
+          if (this.$v !== undefined) {
+            this.$v.$touch()
+            if (this.$v.currentUser.$invalid) {
+              return false
+            }
+          }
+
+          try {
+            this.blockInterface()
+
+            const data = {
+              username: this.currentUser.username,
+              password: this.currentUser.password,
+            }
+
+            const response = await fetch('http://otus-php-api.localhost/api/v1/login', {
+              method: 'POST',
+              body: JSON.stringify(data),
+              headers: {
+                'Content-Type': 'application/json'
+              }
+            })
+            if (!response.ok) {
+              throw new Error('Ответ сервера: ' + response.status);
+            }
+            const json = await response.json()
+            this.currentUser.token = json.token
+            this.releaseInterface()
+            await this.displayList()
+          } catch (error) {
+            alert('При выполнении запроса возникла ошибка.')
+            this.releaseInterface()
+          }
+        },
+
+        logout: function () {
+          this.currentUser.username = ''
+          this.currentUser.password = ''
+          this.currentUser.token = ''
         },
 
         loadLeadList: async function () {
@@ -353,10 +456,14 @@
             const response = await fetch('http://otus-php-api.localhost/api/v1/lead', {
               method: 'GET',
               headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + this.currentUser.token,
               }
             })
             if (!response.ok) {
+              if (response.status === 401) {
+                this.logout()
+              }
               throw new Error('Ответ сервера: ' + response.status);
             }
             const json = await response.json()
@@ -366,6 +473,7 @@
               this.leads.push(lead)
             })
             this.releaseInterface()
+            this.displayMode = 'list'
           } catch (error) {
             alert('При выполнении запроса возникла ошибка.')
             this.releaseInterface()
@@ -378,16 +486,21 @@
             const response = await fetch('http://otus-php-api.localhost/api/v1/lead/' + id, {
               method: 'GET',
               headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + this.currentUser.token,
               }
             })
             if (!response.ok) {
+              if (response.status === 401) {
+                this.logout()
+              }
               throw new Error('Ответ сервера: ' + response.status);
             }
             const json = await response.json()
             const lead = this.mapBackendToFrontend(json)
             this.currentLead = Object.assign({}, lead)
             this.releaseInterface()
+            this.displayMode = 'lead'
           } catch (error) {
             alert('При выполнении запроса возникла ошибка.')
             this.releaseInterface()
@@ -396,10 +509,10 @@
 
         saveLead: async function () {
 
-          // Валидация шага
+          // Валидация
           if (this.$v !== undefined) {
             this.$v.$touch()
-            if (this.$v.$invalid) {
+            if (this.$v.currentLead.$invalid) {
               return false
             }
           }
@@ -413,10 +526,14 @@
               method: 'POST',
               body: JSON.stringify(data),
               headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + this.currentUser.token,
               }
             })
             if (!response.ok) {
+              if (response.status === 401) {
+                this.logout()
+              }
               throw new Error('Ответ сервера: ' + response.status);
             }
             const json = await response.json()
@@ -467,7 +584,6 @@
       created: function () {
       },
       mounted: function () {
-        this.displayList()
       }
     })
 
