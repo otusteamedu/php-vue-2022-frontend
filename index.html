@@ -5,7 +5,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <!-- Bootstrap CSS -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
   <title>OTUS Bank</title>
 </head>
 <body>
@@ -20,169 +21,390 @@
   </div><!-- /.container -->
 </header>
 
-<article class="my-4">
-  <div class="container">
-    <div class="row">
-      <div class="col">
-        <h3>Список заявок</h3>
-        <table class="table table-striped">
-          <thead>
-          <tr>
-            <th scope="col">#</th>
-            <th scope="col">Дата</th>
-            <th scope="col">ФИО</th>
-            <th scope="col">Телефон</th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr>
-            <th scope="row">1</th>
-            <td>Mark</td>
-            <td>Otto</td>
-            <td>@mdo</td>
-          </tr>
-          <tr>
-            <th scope="row">2</th>
-            <td>Jacob</td>
-            <td>Thornton</td>
-            <td>@fat</td>
-          </tr>
-          <tr>
-            <th scope="row">3</th>
-            <td>Larry</td>
-            <td>the Bird</td>
-            <td>@twitter</td>
-          </tr>
-          </tbody>
-        </table>
-      </div><!-- /.col -->
-    </div><!-- /.row -->
-  </div><!-- /.container -->
-</article>
+<div id="app">
 
-<article class="my-4">
-  <div class="container">
-    <div class="row">
-      <div class="col">
-        <h3>Заявка №2</h3>
-        <table class="table">
-          <tbody>
-          <tr>
-            <th scope="row">Данные клиента</th>
-            <td class="pl-0">
-              <table class="table table-borderless">
-                <tbody>
-                <tr>
-                  <th scope="row" class="pt-0 w-200">Фамилия</th>
-                  <td class="pt-0">Mark</td>
-                </tr>
-                <tr>
-                  <th scope="row">Имя</th>
-                  <td>Mark</td>
-                </tr>
-                <tr>
-                  <th scope="row">Дата рождения</th>
-                  <td>Mark</td>
-                </tr>
-                <tr>
-                  <th scope="row" class="pb-0">Телефон</th>
-                  <td class="pb-0">Mark</td>
-                </tr>
-                </tbody>
-              </table>
-            </td>
-          </tr>
-          <tr>
-            <th scope="row">Паспорт клиента</th>
-            <td class="pl-0">
-              <table class="table table-borderless">
-                <tbody>
-                <tr>
-                  <th scope="row" class="pt-0 w-200">Серия</th>
-                  <td class="pt-0">Mark</td>
-                </tr>
-                <tr>
-                  <th scope="row">Номер</th>
-                  <td>Mark</td>
-                </tr>
-                <tr>
-                  <th scope="row" class="pb-0">Дата выдачи</th>
-                  <td class="pb-0">Mark</td>
-                </tr>
-                </tbody>
-              </table>
-            </td>
-          </tr>
-          </tbody>
-        </table>
-      </div><!-- /.col -->
-    </div><!-- /.row -->
-  </div><!-- /.container -->
-</article>
+  <article class="my-4">
+    <div class="container">
+      <div class="row">
+        <div class="col">
+          <div class="d-flex justify-content-between my-4">
+            <h3 class="m-0">Список заявок</h3>
+            <button class="btn btn-primary" @click="createLead()">Создать заявку</button>
+          </div>
+          <template v-if="leads.length">
+            <table class="table table-striped">
+              <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">ФИО</th>
+                <th scope="col">Телефон</th>
+                <th scope="col">Статус</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr v-for="lead in leads" :key="lead.id">
+                <td>{{ lead.id }}</td>
+                <td><a href="javascript:void(0)"
+                       @click="loadLead(lead.id)">{{ lead.fullName.surname }} {{ lead.fullName.name }}</a></td>
+                <td>{{ lead.phone }}</td>
+                <td>В работе</td>
+              </tr>
+              </tbody>
+            </table>
+          </template>
+          <template v-else>
+            <p>У вас пока нет ни одной заявки.</p>
+          </template>
+        </div><!-- /.col -->
+      </div><!-- /.row -->
+    </div><!-- /.container -->
+  </article>
 
-<article class="my-4">
-  <div class="container">
-    <div class="row">
-      <div class="col">
-        <h3>Создание заявки</h3>
-        <form>
-          <fieldset class="border p-4 my-4 bg-light">
-            <h4>Данные клиента</h4>
-            <div class="form-row">
-              <div class="form-group col-4">
-                <label for="surname">Фамилия</label>
-                <input type="text" class="form-control" id="surname">
-              </div>
-              <div class="form-group col-4">
-                <label for="name">Имя</label>
-                <input type="text" class="form-control" id="name">
-              </div>
-            </div>
-            <div class="form-row">
-              <div class="form-group col-4">
-                <label for="birthday">Дата рождения</label>
-                <input type="date" class="form-control" id="birthday">
-              </div>
-              <div class="form-group col-4">
-                <label for="phone">Телефон</label>
-                <input type="tel" class="form-control" id="phone">
-              </div>
-            </div>
-          </fieldset>
-          <fieldset class="border p-4 my-4 bg-light">
-            <h4>Паспорт клиента</h4>
-            <div class="form-row">
-              <div class="form-group col-4">
-                <label for="serial">Серия</label>
-                <input type="text" maxlength="4" class="form-control" id="serial">
-              </div>
-              <div class="form-group col-4">
-                <label for="number">Номер</label>
-                <input type="text" maxlength="6" class="form-control" id="number">
-              </div>
-              <div class="form-group col-4">
-                <label for="date">Дата выдачи</label>
-                <input type="date" class="form-control" id="date">
-              </div>
-            </div>
-          </fieldset>
-          <button type="submit" class="btn btn-primary">Отправить</button>
-        </form>
-      </div><!-- /.col -->
-    </div><!-- /.row -->
-  </div><!-- /.container -->
-</article>
+  <article class="my-4">
+    <div class="container">
+      <div class="row">
+        <div class="col">
+          <div class="d-flex justify-content-between my-4">
+            <h3 class="m-0">Заявка №{{ currentLead.id }}</h3>
+            <button class="btn btn-secondary" @click="displayList()">Вернуться к списку</button>
+          </div>
+          <table class="table">
+            <tbody>
+            <tr>
+              <th scope="row">Данные клиента</th>
+              <td class="pl-0">
+                <table class="table table-borderless">
+                  <tbody>
+                  <tr>
+                    <th scope="row" class="pt-0 w-200">Фамилия</th>
+                    <td class="pt-0">{{ currentLead.fullName.surname }}</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Имя</th>
+                    <td>{{ currentLead.fullName.name }}</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Дата рождения</th>
+                    <td>{{ currentLead.birthday }}</td>
+                  </tr>
+                  <tr>
+                    <th scope="row" class="pb-0">Телефон</th>
+                    <td class="pb-0">{{ currentLead.phone }}</td>
+                  </tr>
+                  </tbody>
+                </table>
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">Паспорт клиента</th>
+              <td class="pl-0">
+                <table class="table table-borderless">
+                  <tbody>
+                  <tr>
+                    <th scope="row" class="pt-0 w-200">Серия</th>
+                    <td class="pt-0">{{ currentLead.passport.serial }}</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Номер</th>
+                    <td>{{ currentLead.passport.number }}</td>
+                  </tr>
+                  <tr>
+                    <th scope="row" class="pb-0">Дата выдачи</th>
+                    <td class="pb-0">{{ currentLead.passport.date }}</td>
+                  </tr>
+                  </tbody>
+                </table>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div><!-- /.col -->
+      </div><!-- /.row -->
+    </div><!-- /.container -->
+  </article>
 
-<style>
-  .w-200 {
-      width: 200px;
-  }
-</style>
+  <article class="my-4">
+    <div class="container">
+      <div class="row">
+        <div class="col">
+          <div class="d-flex justify-content-between my-4">
+            <h3 class="m-0">Создать заявку</h3>
+            <button class="btn btn-secondary" @click="displayList()">Вернуться к списку</button>
+          </div>
+          <form>
+            <fieldset class="border p-4 my-4 bg-light">
+              <h4>Данные клиента</h4>
+              <div class="form-row">
+                <div class="form-group col-4">
+                  <label for="surname">Фамилия</label>
+                  <input type="text" class="form-control" id="surname">
+                </div>
+                <div class="form-group col-4">
+                  <label for="name">Имя</label>
+                  <input type="text" class="form-control" id="name">
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group col-4">
+                  <label for="birthday">Дата рождения</label>
+                  <input type="date" class="form-control" id="birthday">
+                </div>
+                <div class="form-group col-4">
+                  <label for="phone">Телефон</label>
+                  <input type="tel" class="form-control" id="phone">
+                </div>
+              </div>
+            </fieldset>
+            <fieldset class="border p-4 my-4 bg-light">
+              <h4>Паспорт клиента</h4>
+              <div class="form-row">
+                <div class="form-group col-4">
+                  <label for="serial">Серия</label>
+                  <input type="text" maxlength="4" class="form-control" id="serial">
+                </div>
+                <div class="form-group col-4">
+                  <label for="number">Номер</label>
+                  <input type="text" maxlength="6" class="form-control" id="number">
+                </div>
+                <div class="form-group col-4">
+                  <label for="date">Дата выдачи</label>
+                  <input type="date" class="form-control" id="date">
+                </div>
+              </div>
+            </fieldset>
+            <button type="submit" class="btn btn-primary">Отправить</button>
+          </form>
+        </div><!-- /.col -->
+      </div><!-- /.row -->
+    </div><!-- /.container -->
+  </article>
+
+</div><!-- /#app -->
 
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+
+<script src="js/vue.2.7.0.js"></script>
+<script src="js/vue-the-mask.js"></script>
+<script src="js/vuelidate.min.js"></script>
+<script src="js/validators.min.js"></script>
+
+<script type="application/javascript">
+
+  $(document).ready(function () {
+
+    // Vuelidate
+    Vue.use(vuelidate.default)
+    var required = validators.required
+    var minLength = validators.minLength
+
+    // Vue The Mask
+    Vue.use(VueTheMask)
+
+    // Vue.js
+    var vm = new Vue({
+      el: '#app',
+      data: {
+        // Объект заявки для формы/страницы
+        currentLead: {
+          id: null,
+          fullName: {
+            surname: '',
+            name: '',
+          },
+          birthday: '',
+          phone: '',
+          passport: {
+            serial: '',
+            number: '',
+            date: '',
+          },
+        },
+        // Список заявок для таблицы
+        leads: [],
+        // Вспомогательные свойства
+        isInterfaceActive: true,
+      },
+      validations: {
+        currentLead: {
+          fullName: {
+            surname: {
+              required: required
+            },
+            name: {
+              required: required
+            },
+          },
+          birthday: {
+            required: required
+          },
+          phone: {
+            required: required,
+            isValidValue: function (value) {
+              return value.replaceAll(/\D/g, '').length === 11
+            }
+          },
+          passport: {
+            serial: {
+              required: required,
+              isValidValue: function (value) {
+                return value.test(/\d{4}/)
+              }
+            },
+            number: {
+              required: required,
+              isValidValue: function (value) {
+                return value.test(/\d{6}/)
+              }
+            },
+            date: {
+              required: required
+            },
+          },
+        },
+      },
+      methods: {
+
+        blockInterface: function () {
+          this.isInterfaceActive = false
+        },
+
+        releaseInterface: function () {
+          this.isInterfaceActive = true
+        },
+
+        loadLeadList: async function () {
+          try {
+            this.blockInterface()
+            const response = await fetch('http://otus-php-api.localhost/api/v1/lead', {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json'
+              }
+            })
+            const json = await response.json()
+            this.leads.splice(0)
+            json.leads.forEach(el => {
+              const lead = this.mapBackendToFrontend(el)
+              this.leads.push(lead)
+            })
+            this.releaseInterface()
+          } catch (error) {
+            alert('При выполнении запроса возникла ошибка.')
+            this.releaseInterface()
+          }
+        },
+
+        loadLead: async function (id) {
+          try {
+            this.blockInterface()
+            const response = await fetch('http://otus-php-api.localhost/api/v1/lead/' + id, {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json'
+              }
+            })
+            const json = await response.json()
+            const lead = this.mapBackendToFrontend(json)
+            this.currentLead = Object.assign({}, lead)
+            this.releaseInterface()
+          } catch (error) {
+            alert('При выполнении запроса возникла ошибка.')
+            this.releaseInterface()
+          }
+        },
+
+        saveLead: async function () {
+
+          // Валидация шага
+          if (this.$v !== undefined) {
+            this.$v.$touch()
+            if (this.$v.$invalid) {
+              return false
+            }
+          }
+
+          // Подготовка данных для API
+          const data = this.mapFrontendToBackend(this.currentLead)
+
+          try {
+            this.blockInterface()
+            const response = await fetch('http://otus-php-api.localhost/api/v1/lead', {
+              method: 'POST',
+              body: JSON.stringify(data),
+              headers: {
+                'Content-Type': 'application/json'
+              }
+            })
+            const json = await response.json()
+            this.releaseInterface()
+          } catch (error) {
+            alert('При выполнении запроса возникла ошибка.')
+            this.releaseInterface()
+          }
+
+        },
+
+        mapFrontendToBackend: function (data) {
+          return {
+            id: data.id,
+            full_name: {
+              surname: data.fullName.surname,
+              name: data.fullName.name,
+            },
+            birthday: data.birthday + 'T00:00:00P',
+            phone: data.phone.replaceAll(/\D/g, '').substr(1),
+            passport: {
+              serial: data.passport.serial,
+              number: data.passport.number,
+              date: data.passport.date + 'T00:00:00P',
+            },
+          }
+        },
+
+        mapBackendToFrontend: function (data) {
+          return {
+            id: data.id,
+            fullName: {
+              surname: data.full_name.surname,
+              name: data.full_name.name,
+            },
+            birthday: data.birthday.substr(0, 10),
+            phone: '+7' + data.phone,
+            passport: {
+              serial: data.passport.serial,
+              number: data.passport.number,
+              date: data.passport.date.substr(0, 10)
+            },
+          }
+        }
+
+      },
+      created: function () {
+      },
+      mounted: function () {
+        this.loadLeadList()
+      }
+    })
+
+  })
+
+</script>
+
+<style>
+    .w-200 {
+        width: 200px;
+    }
+</style>
+
 </body>
 </html>
