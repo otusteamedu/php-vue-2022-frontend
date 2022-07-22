@@ -296,6 +296,8 @@
 
 <script type="application/javascript">
 
+  const APP_HOST = 'http://otus-php-api.localhost'
+
   $(document).ready(function () {
 
     // Vuelidate
@@ -439,7 +441,7 @@
               password: this.currentUser.password,
             }
 
-            const response = await fetch('http://otus-php-api.localhost/api/v1/login', {
+            const response = await fetch(APP_HOST + '/api/v1/login', {
               method: 'POST',
               body: JSON.stringify(data),
               headers: {
@@ -468,7 +470,7 @@
         loadLeadList: async function () {
           try {
             this.blockInterface()
-            const response = await fetch('http://otus-php-api.localhost/api/v1/lead', {
+            const response = await fetch(APP_HOST + '/api/v1/lead', {
               method: 'GET',
               headers: {
                 'Content-Type': 'application/json',
@@ -498,7 +500,7 @@
         loadLead: async function (id) {
           try {
             this.blockInterface()
-            const response = await fetch('http://otus-php-api.localhost/api/v1/lead/' + id, {
+            const response = await fetch(APP_HOST + '/api/v1/lead/' + id, {
               method: 'GET',
               headers: {
                 'Content-Type': 'application/json',
@@ -537,7 +539,7 @@
 
           try {
             this.blockInterface()
-            const response = await fetch('http://otus-php-api.localhost/api/v1/lead', {
+            const response = await fetch(APP_HOST + '/api/v1/lead', {
               method: 'POST',
               body: JSON.stringify(data),
               headers: {
